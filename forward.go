@@ -4,7 +4,7 @@
 package forward
 
 import (
-	"gopkg.in/vinci-proxy/vinci.v0/utils"
+	"gopkg.in/vinci-proxy/utils.v0"
 	"net/http"
 	"os"
 	"strings"

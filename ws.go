@@ -2,7 +2,7 @@ package forward
 
 import (
 	"crypto/tls"
-	"gopkg.in/vinci-proxy/vinci.v0/utils"
+	"gopkg.in/vinci-proxy/utils.v0"
 	"io"
 	"net"
 	"net/http"
