@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/vulcand/oxy/testutils"
-	"gopkg.in/vinci-proxy/utils.v0"
+	"gopkg.in/vinxi/utils.v0"
 
 	"golang.org/x/net/websocket"
 	. "gopkg.in/check.v1"
