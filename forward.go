@@ -127,14 +127,15 @@ func (f *Forwarder) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 // isWebsocketRequest determines if the specified HTTP request is a
 // websocket handshake request
 func isWebsocketRequest(req *http.Request) bool {
-	containsHeader := func(name, value string) bool {
-		items := strings.Split(req.Header.Get(name), ",")
-		for _, item := range items {
-			if value == strings.ToLower(strings.TrimSpace(item)) {
-				return true
-			}
+	return containsHeader(req, Connection, "upgrade") && containsHeader(req, Upgrade, "websocket")
+}
+
+func containsHeader(req *http.Request, name, value string) bool {
+	items := strings.Split(req.Header.Get(name), ",")
+	for _, item := range items {
+		if value == strings.ToLower(strings.TrimSpace(item)) {
+			return true
 		}
-		return false
 	}
-	return containsHeader(Connection, "upgrade") && containsHeader(Upgrade, "websocket")
+	return false
 }

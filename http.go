@@ -62,9 +62,12 @@ func (f *httpForwarder) copyRequest(req *http.Request, u *url.URL) *http.Request
 	*outReq = *req // includes shallow copies of maps, but we handle this below
 
 	outReq.URL = utils.CopyURL(req.URL)
-	outReq.URL.Scheme = u.Scheme
 	outReq.URL.Host = u.Host
 	outReq.URL.Opaque = req.RequestURI
+	outReq.URL.Scheme = u.Scheme
+	if outReq.URL.Scheme == "" {
+		outReq.URL.Scheme = "http"
+	}
 	// raw query is already included in RequestURI, so ignore it to avoid dupes
 	outReq.URL.RawQuery = ""
 	// Do not pass client Host header unless optsetter PassHostHeader is set.
