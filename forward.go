@@ -96,6 +96,7 @@ func New(setters ...OptSetter) (*Forwarder, error) {
 		}
 	}
 	if f.httpForwarder.roundTripper == nil {
+		// TODO: use own default transport with EnsureFinalized()
 		f.httpForwarder.roundTripper = http.DefaultTransport
 	}
 	if f.httpForwarder.rewriter == nil {
