@@ -4,10 +4,10 @@
 package forward
 
 import (
-	"gopkg.in/vinxi/utils.v0"
 	"net/http"
 	"os"
-	"strings"
+
+	"gopkg.in/vinxi/utils.v0"
 )
 
 // ReqRewriter can alter request headers and body
@@ -96,8 +96,7 @@ func New(setters ...OptSetter) (*Forwarder, error) {
 		}
 	}
 	if f.httpForwarder.roundTripper == nil {
-		// TODO: use own default transport with EnsureFinalized()
-		f.httpForwarder.roundTripper = http.DefaultTransport
+		f.httpForwarder.roundTripper = utils.DefaultTransport
 	}
 	if f.httpForwarder.rewriter == nil {
 		h, err := os.Hostname()
@@ -118,25 +117,9 @@ func New(setters ...OptSetter) (*Forwarder, error) {
 // ServeHTTP decides which forwarder to use based on the specified
 // request and delegates to the proper implementation
 func (f *Forwarder) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	if isWebsocketRequest(req) {
+	if utils.IsWebsocketRequest(req) {
 		f.websocketForwarder.serveHTTP(w, req, f.handlerContext)
 	} else {
 		f.httpForwarder.serveHTTP(w, req, f.handlerContext)
 	}
-}
-
-// isWebsocketRequest determines if the specified HTTP request is a
-// websocket handshake request
-func isWebsocketRequest(req *http.Request) bool {
-	return containsHeader(req, Connection, "upgrade") && containsHeader(req, Upgrade, "websocket")
-}
-
-func containsHeader(req *http.Request, name, value string) bool {
-	items := strings.Split(req.Header.Get(name), ",")
-	for _, item := range items {
-		if value == strings.ToLower(strings.TrimSpace(item)) {
-			return true
-		}
-	}
-	return false
 }

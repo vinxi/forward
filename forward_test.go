@@ -10,6 +10,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/nbio/st"
 	"github.com/vulcand/oxy/testutils"
 	"gopkg.in/vinxi/utils.v0"
 
@@ -24,8 +25,8 @@ type FwdSuite struct{}
 var _ = Suite(&FwdSuite{})
 
 // Makes sure hop-by-hop headers are removed
-func (s *FwdSuite) TestForwardHopHeaders(c *C) {
-	called := false
+func TestForwardHopHeaders(t *testing.T) {
+	var called bool
 	var outHeaders http.Header
 	var outHost, expectedHost string
 	srv := testutils.NewHandler(func(w http.ResponseWriter, req *http.Request) {
@@ -37,7 +38,7 @@ func (s *FwdSuite) TestForwardHopHeaders(c *C) {
 	defer srv.Close()
 
 	f, err := New()
-	c.Assert(err, IsNil)
+	st.Expect(t, err, nil)
 
 	proxy := testutils.NewHandler(func(w http.ResponseWriter, req *http.Request) {
 		req.URL = testutils.ParseURI(srv.URL)
@@ -52,13 +53,13 @@ func (s *FwdSuite) TestForwardHopHeaders(c *C) {
 	}
 
 	re, body, err := testutils.Get(proxy.URL, testutils.Headers(headers))
-	c.Assert(err, IsNil)
-	c.Assert(string(body), Equals, "hello")
-	c.Assert(re.StatusCode, Equals, http.StatusOK)
-	c.Assert(called, Equals, true)
-	c.Assert(outHeaders.Get(Connection), Equals, "")
-	c.Assert(outHeaders.Get(KeepAlive), Equals, "")
-	c.Assert(outHost, Equals, expectedHost)
+	st.Expect(t, err, nil)
+	st.Expect(t, string(body), "hello")
+	st.Expect(t, re.StatusCode, http.StatusOK)
+	st.Expect(t, called, true)
+	st.Expect(t, outHeaders.Get(Connection), "")
+	st.Expect(t, outHeaders.Get(KeepAlive), "")
+	st.Expect(t, outHost, expectedHost)
 }
 
 func (s *FwdSuite) TestDefaultErrHandler(c *C) {
@@ -297,7 +298,7 @@ func (s *FwdSuite) TestDetectsWebsocketRequest(c *C) {
 		conn.Close()
 	}))
 	srv := testutils.NewHandler(func(w http.ResponseWriter, req *http.Request) {
-		websocketRequest := isWebsocketRequest(req)
+		websocketRequest := utils.IsWebsocketRequest(req)
 		c.Assert(websocketRequest, Equals, true)
 		mux.ServeHTTP(w, req)
 	})

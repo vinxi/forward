@@ -1,12 +1,13 @@
 package forward
 
 import (
-	"gopkg.in/vinxi/utils.v0"
 	"io"
 	"net/http"
 	"net/url"
 	"strconv"
 	"time"
+
+	"gopkg.in/vinxi/utils.v0"
 )
 
 // httpForwarder is a handler that can reverse proxy
