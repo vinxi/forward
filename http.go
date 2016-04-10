@@ -1,6 +1,7 @@
 package forward
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -23,6 +24,7 @@ func (f *httpForwarder) serveHTTP(w http.ResponseWriter, req *http.Request, ctx 
 	start := time.Now().UTC()
 	response, err := f.roundTripper.RoundTrip(f.copyRequest(req, req.URL))
 	if err != nil {
+		fmt.Printf(">> Error: %s \n", err)
 		ctx.log.Errorf("Error forwarding to %v, err: %v", req.URL, err)
 		ctx.errHandler.ServeHTTP(w, req, err)
 		return
